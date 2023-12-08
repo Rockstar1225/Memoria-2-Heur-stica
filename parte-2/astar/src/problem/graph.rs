@@ -257,12 +257,10 @@ impl Graph {
     // First heuristic
     #[must_use]
     pub fn h1(&self, state: &Vehicle) -> usize {
-        // Initializes the control variables
-        let mut pos = state.pos;
-        // Tries to go to the furthest patient
-        let distance = self.go_furthest(&state.visited, &mut pos, self.targets.all_patients());
+        // Gets which patient types haven't been fully delivered
         let (pacientes_n, pacientes_c) = self.remaining(state);
-        distance + self.finish_cost(pos, pacientes_c, pacientes_n)
+        // Delivers the remaining patients
+        self.finish_cost(state.pos, pacientes_c, pacientes_n)
     }
 
     // Second heuristic
