@@ -257,10 +257,17 @@ impl Graph {
     // First heuristic
     #[must_use]
     pub fn h1(&self, state: &Vehicle) -> usize {
-        // Gets which patient types haven't been fully delivered
+        // Initializes the control variables
+        let (mut distance, mut pos) = (0, state.pos);
+        // If it already has contagious patients, tries to go to the furthest one
+        if state.pacientes_c > 0 {
+            distance += self.go_furthest(&state.visited, &mut pos, self.targets.patients_c.iter());
+        // If it doesn't already have contagious patients, tries to go to the furthest patient
+        } else {
+            distance += self.go_furthest(&state.visited, &mut pos, self.targets.all_patients());
+        };
         let (pacientes_n, pacientes_c) = self.remaining(state);
-        // Delivers the remaining patients
-        self.finish_cost(state.pos, pacientes_c, pacientes_n)
+        distance + self.finish_cost(pos, pacientes_c, pacientes_n)
     }
 
     // Second heuristic
@@ -279,6 +286,7 @@ impl Graph {
             let res = self.go_furthest(&state.visited, &mut pos, self.targets.patients_n.iter());
             distance += res;
             (res != 0, false)
+        // If it doesn't already have contagious patients, tries to go to the furthest patient and deliver them
         } else {
             distance += self.go_furthest(&state.visited, &mut pos, self.targets.all_patients());
             self.remaining(state)
