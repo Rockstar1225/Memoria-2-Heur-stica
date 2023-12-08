@@ -35,7 +35,7 @@ impl Tile {
 }
 
 impl FromStr for Tile {
-    type Err = <u8 as FromStr>::Err;
+    type Err = String;
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "N" => Ok(Self::PacienteN),
@@ -44,7 +44,9 @@ impl FromStr for Tile {
             "CC" => Ok(Self::CenterC),
             "P" => Ok(Self::Parking),
             "X" => Ok(Self::Wall),
-            x => Ok(Self::Empty(x.parse()?)),
+            x => Ok(Self::Empty(
+                x.parse().map_err(|_| format!("Unknown map tile: `{x}`"))?,
+            )),
         }
     }
 }
