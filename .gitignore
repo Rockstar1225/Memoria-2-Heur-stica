@@ -1,3 +1,5 @@
 **/target/
+.spell/
 *.stat
 *.output
+.markdownlint.json
