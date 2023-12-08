@@ -70,7 +70,11 @@ pub fn run(config: &Config) -> Result<(), Box<dyn Error>> {
         },
     );
     map.dump(
-        &config.input_file[..config.input_file.len() - 4],
+        &format!(
+            "{}-{}",
+            &config.input_file[..config.input_file.len() - 4],
+            config.heuristic
+        ),
         result.as_ref(),
         &stats,
     )?;
