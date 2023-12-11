@@ -25,9 +25,40 @@ header-includes: |
 
 ## 1 Introducción
 
+El objetivo de la realización de esta práctica consiste en:
+
+- Modelar un problema y resolverlo utilizando SCP
+- Diseñar un problema y resolverlo usando búsqueda heurística (A*).
+
+
 ## 2 Descripción de los modelos
 
 ### 2.1 Problema 1
+
+#### Representación del problema
+
+Según el enunciado del primer problema, se nos pide modelar un parking con cantidad variable de plazas reservadas para vehículos eléctricos o con congelador.
+Para resolver el problema en sí, se representan los siguientes conceptos:
+
+- Parking: se modelará como una matriz de longitud "n" filas y "m" columnas. Dichos parámetros se elegirán por el usuario.
+- Plaza: Una plaza del aparcamiento anterior estará representada por una tupla con sus coordenadas. Por ejemplo, para la plaza 1, se representará como "(0,0)" en el problema.
+- Vehículo: Un vehículo quedará definido por una cadena formada por la concatenación de su número identificador, su tipo (TSU si es urgente y TNU si no) y si tiene congelador o no.
+
+Las variables del problema indispensables para su resolución serán representadas por todos y cada uno de los vehículos que deseen ingresar al parking. Sus valores de dominio, serán así las posiciones asignables a dicho vehículo en el parking. Para este problema, se ha diferenciado entre dos tipos de variables:
+
+- Vehículos que están equipados con congelador: Estos vehículos solo podrán ser asignados plazas electricas en el parking.
+- Vehículos que no tienen sistemas eléctricos: Dicho tipo podrá tener asignada cualquier plaza en el parking. 
+
+#### Modelado de Restricciones
+
+La descripción de las restricciones dada la representación anterior del problema queda así:
+
+- Solo puede haber un vehículo aparcado en una plaza del aparcamiento: Dado que la implementación utiliza una matriz de elementos únicos para cada casilla, esta restricción se cumple por defecto.
+- No se pueden quedar vehículos sin plaza: Una variable "vehículo" solo puede quedar con un valor en su dominio. Habiendo definido las variables del problema como los vehículos y no las plazas, nos aseguramos de que todo coche esté exactamente en una plaza.
+- Los vehículos provistos de congelador solo podrán asignarse a plazas electricas: Esta restricción también se contempla con la representación del problema.
+- Un vehículo de tipo urgente o TSU, no puede tener aparcado uno no urgente o TNU en todas las posiciones de su derecha en su misma fila. Esto se realiza comparando las cordenadas "y" e igualando las "x" de cada par de posiciones en el parking. De esta manera, no se pondrá un TNU en posiciones mayores a un TSU en su misma fila.
+- Para poder entrar y salir de su plaza, cada coche no puede tener aparcado uno delante y atrás a la vez. Así se asegura una maniobrabilidad decente en el parking. Esta restricción se satisface comparando todas las combinaciones de trios de posiciones a asignar para filtrar las que no estén consecutivas.
+- De la restricción anterior, surge otra extra para los casos de los aparcamientos en los laterales o bordes del parking. Resulta que si un vehículo está aparcado en una de la primera fila del parking, no puede tener otro vehiculo aparcado justo abajo ya que no podría salir. Lo mismo pasa con los vehículos que aparquen en la última fila del parking pero con las posiciones de arriba. Para satisfacer esta restricción, se buscan los pares de posiciones que estando una en el borde, la otra no sea consecutiva por arriba o por abajo.
 
 ### 2.2 Problema 2
 
