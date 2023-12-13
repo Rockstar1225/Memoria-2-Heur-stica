@@ -41,8 +41,10 @@ Según el enunciado del primer problema, se nos pide modelar un parking con cant
 Para resolver el problema en sí, se representan los siguientes conceptos:
 
 - Parking: se modelará como una matriz de longitud "n" filas y "m" columnas. Dichos parámetros se elegirán por el usuario.
-- Plaza: Una plaza del aparcamiento anterior estará representada por una tupla con sus coordenadas. Por ejemplo, para la plaza 1, se representará como "(0,0)" en el problema.
-- Vehículo: Un vehículo quedará definido por una cadena formada por la concatenación de su número identificador, su tipo (TSU si es urgente y TNU si no) y si tiene congelador o no.
+
+- Plaza: Una plaza del aparcamiento anterior estará representada por una tupla con sus coordenadas. Por ejemplo, para la plaza 1, se representará como "(0,0)" en el problema. Cabe a resaltar que en los archivos proporcionados en el algoritmo, se trata la lista de posiciones electricas como "(1,1) (2,2) (3,3)" con espacios entre cada una de las posiciones (adaptación del archivo presentado en el enunciado). Este espacio extra se ha añadido para mayor facilidad a la hora de extraer las posiciones del documento.
+
+- Vehículo: Un vehículo quedará definido por una cadena formada por la concatenación de su número identificador, su tipo (TSU si es urgente y TNU si no) y si tiene congelador o no. Ej. "1-TSU-X".
 
 Las variables del problema indispensables para su resolución serán representadas por todos y cada uno de los vehículos que deseen ingresar al parking. Sus valores de dominio, serán así las posiciones asignables a dicho vehículo en el parking. Para este problema, se ha diferenciado entre dos tipos de variables:
 
@@ -225,3 +227,17 @@ Debido a la similitud de las heurísticas, en muchos de los casos de prueba el r
 Para un caso complejo como el problema dado, la primera heurística necesita expandir $\sim 174$ millones de estados, mientras que la segunda es capaz de expandir únicamente $\sim 87$ millones
 
 ## 4 Conclusión
+
+Para esta práctica, hemos aprendido los diferentes conceptos:
+
+- Representar problemas en Python
+- Modelado de problemas reales
+- Representado de las restricciones del problema (funciones lambda)
+- Resolver problemas de satisfacción de restricciones con la librería "_Python-Constraints_"
+- Extraer información de archivos
+- Volcar resultados de algoritmos en archivos de salida
+- Implementación de A* en Rust
+- Comparación de distintas heurísticas admisibles y sus efectos en la resolución del problema
+- Resolución de problemas reales con algoritmos de búsqueda.
+
+Se puede concluir que en el tiempo de realización de la práctica, se ha seguido una curva de aprendizaje bastante razonable y se han aprovechado conceptos del lenguaje _Python_ adquiridos en cursos anteriores.
