@@ -30,7 +30,6 @@ El objetivo de la realización de esta práctica consiste en:
 - Modelar un problema y resolverlo utilizando SCP
 - Diseñar un problema y resolverlo usando búsqueda heurística (A*).
 
-
 ## 2 Descripción de los modelos
 
 ### 2.1 Problema 1
@@ -40,27 +39,36 @@ El objetivo de la realización de esta práctica consiste en:
 Según el enunciado del primer problema, se nos pide modelar un parking con cantidad variable de plazas reservadas para vehículos eléctricos o con congelador.
 Para resolver el problema en sí, se representan los siguientes conceptos:
 
-- Parking: se modelará como una matriz de longitud "n" filas y "m" columnas. Dichos parámetros se elegirán por el usuario.
-
-- Plaza: Una plaza del aparcamiento anterior estará representada por una tupla con sus coordenadas. Por ejemplo, para la plaza 1, se representará como "(0,0)" en el problema. Cabe a resaltar que en los archivos proporcionados en el algoritmo, se trata la lista de posiciones electricas como "(1,1) (2,2) (3,3)" con espacios entre cada una de las posiciones (adaptación del archivo presentado en el enunciado). Este espacio extra se ha añadido para mayor facilidad a la hora de extraer las posiciones del documento.
-
+- Parking: se modelará como una matriz de $n$ filas y $m$ columnas. Dichos parámetros se elegirán por el usuario.
+- $\text{Plaza} \in \N^2$: Una plaza del aparcamiento anterior estará representada por una tupla con sus coordenadas. Por ejemplo, para la plaza en la primera fila y columna, se representará como $(1, 1)$ en el problema.
 - Vehículo: Un vehículo quedará definido por una cadena formada por la concatenación de su número identificador, su tipo (TSU si es urgente y TNU si no) y si tiene congelador o no. Ej. "1-TSU-X".
 
-Las variables del problema indispensables para su resolución serán representadas por todos y cada uno de los vehículos que deseen ingresar al parking. Sus valores de dominio, serán así las posiciones asignables a dicho vehículo en el parking. Para este problema, se ha diferenciado entre dos tipos de variables:
+Las variables del problema indispensables para su resolución serán representadas por todos y cada uno de los vehículos que deseen ingresar al parking ($V$). Sus dominios serán el conjunto de posiciones asignables a dicho vehículo en el parking. Para este problema, se ha diferenciado entre dos tipos de variables:
 
-- Vehículos que están equipados con congelador: Estos vehículos solo podrán ser asignados plazas eléctricas en el parking.
-- Vehículos que no tienen sistemas eléctricos: Dicho tipo podrá tener asignada cualquier plaza en el parking. 
+- Vehículos equipados con congelador: Estos vehículos solo podrán ser asignados plazas eléctricas en el parking.
+- Vehículos sin congelador: Estos vehículos podrán tener asignada cualquier plaza en el parking.
+
+De esta forma, se garantiza que se cumplen las restricciones sobre asignar a todos los vehículos a una plaza del parking, y que los vehículos con congelador tengan asignada una plaza eléctrica del parking
 
 #### Modelado de Restricciones
 
-La descripción de las restricciones dada la representación anterior del problema queda así:
+Para definir las restricciones, se ha dividido el conjunto de vehículos ($V$) en 2 subconjuntos disjuntos:
 
-- Solo puede haber un vehículo aparcado en una plaza del aparcamiento: Dado que la implementación utiliza una matriz de elementos únicos para cada casilla, esta restricción se cumple por defecto.
-- No se pueden quedar vehículos sin plaza: Una variable "vehículo" solo puede quedar con un valor en su dominio. Habiendo definido las variables del problema como los vehículos y no las plazas, nos aseguramos de que todo coche esté exactamente en una plaza.
-- Los vehículos provistos de congelador solo podrán asignarse a plazas eléctricas: Esta restricción también se contempla con la representación del problema.
-- Un vehículo de tipo urgente o TSU, no puede tener aparcado uno no urgente o TNU en todas las posiciones de su derecha en su misma fila. Esto se realiza comparando las coordenadas "y" e igualando las "x" de cada par de posiciones en el parking. De esta manera, no se pondrá un TNU en posiciones mayores a un TSU en su misma fila.
-- Para poder entrar y salir de su plaza, cada coche no puede tener aparcado uno delante y atrás a la vez. Así se asegura una maniobrabilidad decente en el parking. Esta restricción se satisface comparando todas las combinaciones de trios de posiciones a asignar para filtrar las que no estén consecutivas.
-- De la restricción anterior, surge otra extra para los casos de los aparcamientos en los laterales o bordes del parking. Resulta que si un vehículo está aparcado en una de la primera fila del parking, no puede tener otro vehículo aparcado justo abajo ya que no podría salir. Lo mismo pasa con los vehículos que aparquen en la última fila del parking pero con las posiciones de arriba. Para satisfacer esta restricción, se buscan los pares de posiciones que estando una en el borde, la otra no sea consecutiva por arriba o por abajo.
+- $V_U$: conjunto de vehículos urgentes (TSU)
+- $V_N$: conjunto de vehículos no urgentes (TNU)
+
+La descripción de las restricciones dada la representación anterior del problema queda así:
+\begin{align}
+    a \not = b & \quad \forall a, b \in V \\
+    (a_y \not = b_y) \lor (a_x > b_x) & \quad \forall a \in V_U, b \in V_N \\
+    \lnot (a_x = b_x = c_x) \lor \min(a_y, b_y, c_y) + 2 \not = \max(a_y, b_y, c_y) & \quad \forall a, b, c \in V, a \not = b \not = c, a \not = c \\
+    a_x \not = b_x \lor \min(a_y, b_y) + 1 \not = \max(a_y, b_y) \lor 1 \not = \min(a_y, b_y) \not = n - 1 & \quad \forall a, b \in V, a \not = b
+\end{align}
+
+(1) Todos los vehículos se tienen que aparcar en plazas distintas del aparcamiento
+(2) Un vehículo de tipo urgente (TSU) no puede tener aparcado uno no urgente (TNU) en todas las posiciones de su derecha en su misma fila.
+(3) Ningún trio de vehículos puede ocupar 3 plazas consecutivas en una columna, ya que esto no cumpliría con la restricción de maniobrabilidad para el vehículo central
+(4) Igual a la restricción $(3)$, pero aplicado al caso de un vehículo aparcado en el bordes del parking. En este caso, un vehículo aparcado en el borde inferior o superior del parking no puede tener a otro aparcado en el lado opuesto al borde.
 
 ### 2.2 Problema 2
 
@@ -104,7 +112,7 @@ El estado final sería cualquier estado que cumpla las siguientes condiciones:
 
 #### Operadores
 
-Este problema cuenta con un único operador: $\operatorname{move}(x, y)$. Este operador mueve la ambulancia según el desplazamiento $(x, y)$. Para cada estado, sus sucesores serán los resultantes de aplicar este operador con los desplazamientos $(-1, 0)$, $(1, 0)$, $(0, -1)$, y $(0, 1)$, los cuales se corresponden con los movimientos horizontales y verticales permitidos.
+Este problema cuenta con un operador: $\operatorname{move}(x, y)$. Este operador mueve la ambulancia según el desplazamiento $(x, y)$. Para cada estado, sus sucesores serán los resultantes de aplicar este operador con los desplazamientos $(-1, 0)$, $(1, 0)$, $(0, -1)$, y $(0, 1)$, los cuales se corresponden con los movimientos horizontales y verticales permitidos.
 
 Las precondiciones son las siguientes:
 \begin{align}
@@ -151,9 +159,9 @@ Si la ambulancia tiene algún paciente contagioso, tendrá que pasar por el cent
 
 #### Resultado Obtenido
 
-Según nuestra implementación en Python con la librería "Python-Constraints" de este problema, al ejecutarlo con un archivo de ejemplo (ejemplo de la memoria), este resulta obteniendo un valor de 2175288 posibles soluciones. 
+Según nuestra implementación en Python con la librería `Python-Constraints` de este problema, al ejecutarlo con un archivo de ejemplo (ejemplo del enunciado), se obtienen $2175288$ posibles soluciones.
 
-Este dato es imposible de comprobar ya que se tardaría mucho tiempo en realizar las combinaciones de todas las casillas a mano. Para demostrar que las soluciones que arroja nuestro programa o script son las necesarias, se realizarán una serie de tests desarrollados en el lenguaje de __BASH SCRIPTING__. 
+Este dato es imposible de comprobar ya que se tardaría mucho tiempo en realizar las combinaciones de todas las casillas a mano. Para demostrar que las soluciones que arroja nuestro programa son las necesarias, se realizarán una serie de tests desarrollados en `bash`.
 
 #### Definición de casos de prueba
 
@@ -167,17 +175,17 @@ A la hora de realización de los tests mencionados, se han tenido en cuenta los 
 
 #### Planteamiento de tests
 
-Los archivos generados como _"Inputs"_ de muestro script "_CSPParking.py_" se crean de la siguiente manera:
+Los archivos generados como _"Inputs"_ de nuestro programa `CSPParking.py` se crean de la siguiente manera:
 
-1. Para el primer caso de prueba, se definirá un parking de tamaño __2x1__. En dicho parking las dos casillas son eléctricas y solo entrarán al parking 2 vehículos con congelador. En este problema, la restricción de tipos se ve relajada debido a que no hace efecto en un parking de una columna. La restricción de maniobrabilidad también lo está debido a que se necesita al menos un trio para poder tener influencia. La restricción que se prueba entonces es la de consecutividad en los bordes. Es por eso que, al no poder salir los coches del parking fácilmente al haber aparcado,  no existen soluciones para este problema.
+1) Para el primer caso de prueba, se definirá un parking de tamaño **2x1**. En dicho parking las dos casillas son eléctricas y solo entrarán al parking 2 vehículos con congelador. En este problema, la restricción de tipos se ve relajada debido a que no hace efecto en un parking de una columna. La restricción de maniobrabilidad también lo está debido a que se necesita al menos un trio para poder tener influencia. La restricción que se prueba entonces es la de consecutividad en los bordes. Es por eso que, al no poder salir los coches del parking fácilmente al haber aparcado,  no existen soluciones para este problema.
 
-2. En el segundo caso de prueba, se creará un parking de tamaño __5x6__. En este, se habilitarán cuatro casillas eléctricas no consecutivas en los bordes de las treinta disponibles. También las ambulancias que necesitarán aparcar en dicho parking serán tres con congelador y de distintos tipos de urgencia. Las restricciones que tienen efecto en las soluciones son las de los bordes (en las soluciones, no saldrán las que tengan una casilla contigua a las eléctricas ocupadas), la de posiciones consecutivas (no puede haber un trio de posiciones consecutivas en ninguna solución) y la restricción de tipos (siempre los vehículos urgentes tendrán a los no urgentes detrás suya y no al revés).
+2) En el segundo caso de prueba, se creará un parking de tamaño **5x6**. En este, se habilitarán cuatro casillas eléctricas no consecutivas en los bordes de las treinta disponibles. También las ambulancias que necesitarán aparcar en dicho parking serán tres con congelador y de distintos tipos de urgencia. Las restricciones que tienen efecto en las soluciones son las de los bordes (en las soluciones, no saldrán las que tengan una casilla contigua a las eléctricas ocupadas), la de posiciones consecutivas (no puede haber un trio de posiciones consecutivas en ninguna solución) y la restricción de tipos (siempre los vehículos urgentes tendrán a los no urgentes detrás suya y no al revés).
 
-3. Para el tercer caso de prueba, se construirá un parking de dimensiones __3x3__. Para este, las posiciones eléctricas serán las cuatro esquinas del cuadrado. Cuatro vehículos eléctricos querrían ocupar su plaza en el aparcamiento (uno de tipo urgente y tres no urgentes). Ya que las posiciones electricas no son consecutivas mutuamente y no hay más ambulancias que las eléctricas, la única restricción que tiene efecto sobre las soluciones es la de los tipos (urgente y no urgente). Entre las soluciones, se debería de observar que no existen soluciones que no tengan al vehículo urgente (vehículo con id de 1) en la esquina superior derecha o inferior derecha.
+3) Para el tercer caso de prueba, se construirá un parking de dimensiones **3x3**. Para este, las posiciones eléctricas serán las cuatro esquinas del cuadrado. Cuatro vehículos eléctricos querrían ocupar su plaza en el aparcamiento (uno de tipo urgente y tres no urgentes). Ya que las posiciones eléctricas no son consecutivas mutuamente y no hay más ambulancias que las eléctricas, la única restricción que tiene efecto sobre las soluciones es la de los tipos (urgente y no urgente). Entre las soluciones, se debería de observar que no existen soluciones que no tengan al vehículo urgente (vehículo con id de 1) en la esquina superior derecha o inferior derecha.
 
-4. En este caso de prueba, se edificará un parking de tamaño __6x4__. Para probar la maniobrabilidad de las posiciones consecutivas, se habilitarán seis posiciones electricas organizadas en trios consecutivos (concretamente en la columna 2 y 4). Para este escenario, seis ambulancias eléctricas de tipo no importante van a ingresar al parking. Dado que todos los vehículos son eléctricos y obligatoriamente tienen que estar en plazas electricas consecutivas, el algoritmo no dará soluciones válidas ya que también se restringen las posiciones consecutivas por otro lado.
+4) En este caso de prueba, se edificará un parking de tamaño **6x4**. Para probar la maniobrabilidad de las posiciones consecutivas, se habilitarán seis posiciones eléctricas organizadas en trios consecutivos (concretamente en la columna 2 y 4). Para este escenario, seis ambulancias eléctricas de tipo no importante van a ingresar al parking. Dado que todos los vehículos son eléctricos y obligatoriamente tienen que estar en plazas eléctricas consecutivas, el algoritmo no dará soluciones válidas ya que también se restringen las posiciones consecutivas por otro lado.
 
-5. Para el último caso de prueba, se definirá un aparcamiento de tamaño __3x3__. En él, no habrá trios de posiciones consecutivas pero si posiciones electricas consecutivas en los bordes de dicho cuadrado (seis posiciones). Todos los seis vehículos que desean aparcar son eléctricos y forzosamente deben estar en posiciones electricas, que a la vez están consecutivas, luego el algoritmo de resolución no dará soluciones válidas al igual que en el anterior caso de prueba.
+5) Para el último caso de prueba, se definirá un aparcamiento de tamaño **3x3**. En él, no habrá trios de posiciones consecutivas pero si posiciones eléctricas consecutivas en los bordes de dicho cuadrado (seis posiciones). Todos los seis vehículos que desean aparcar son eléctricos y forzosamente deben estar en posiciones eléctricas, que a la vez están consecutivas, luego el algoritmo de resolución no dará soluciones válidas al igual que en el anterior caso de prueba.
 
 #### Comprobación de soluciones
 
@@ -185,13 +193,13 @@ Para el método de comprobación de las soluciones obtenidas, los resultados sig
 
 1) Los casos de prueba 1, 4 y 5 no deben tener soluciones válidas para los archivos generados.
 
-2) El caso de prueba 2 debería dar $4! - 4*2 = 16$ soluciones. Esto se puede comprobar ya que 4! soluciones son las posibles combinaciones de 4 elementos en 4 plazas de parking. Dado que hay dos vehículos que son de tipo urgente, cada uno resta al total de soluciones 4 que no se pueden dar debido a la restricción de tipos.
+2) El caso de prueba 2 debería dar $4! - 4*2 = 16$ soluciones. Esto se puede comprobar ya que $4!$ soluciones son las posibles combinaciones de $4$ elementos en $4$ plazas de parking. Dado que hay dos vehículos que son de tipo urgente, cada uno resta al total de soluciones $4$ que no se pueden dar debido a la restricción de tipos.
 
-3) El caso de prueba 3 debería arrojarnos $\frac{4!}{2}$ soluciones debido a que hay 4! posibles maneras de permutar 4 vehículos en 4 posibles plazas del mismo. Como la mitad de las soluciones no respetan la restricción de tipo dejando a la ambulancia urgente en las esquinas superior izquierda e inferior izquierda, dichas soluciones se descartan de las finales (cumpliendo así todas las restricciones).
+3) El caso de prueba 3 debería arrojarnos $\frac{4!}{2}$ soluciones debido a que hay $4!$ posibles maneras de permutar $4$ vehículos en $4$ posibles plazas del mismo. Como la mitad de las soluciones no respetan la restricción de tipo dejando a la ambulancia urgente en las esquinas superior izquierda e inferior izquierda, dichas soluciones se descartan de las finales (cumpliendo así todas las restricciones).
 
 #### Conclusiones de los tests
 
-Dado que los resultados obtenidos por los tests son los esperados, los tests se han ejecutado correctamente, probando así que nuestro algoritmo es legítimo en varios casos base.
+Dado que los resultados obtenidos por los tests son los esperados, los tests se han ejecutado correctamente, probando así que nuestro programa es correcto.
 
 ### 3.2 Problema 2
 
@@ -230,14 +238,15 @@ Para un caso complejo como el problema dado, la primera heurística necesita exp
 
 Para esta práctica, hemos aprendido los diferentes conceptos:
 
-- Representar problemas en Python
+- Representar problemas en `Python`
 - Modelado de problemas reales
 - Representado de las restricciones del problema (funciones lambda)
-- Resolver problemas de satisfacción de restricciones con la librería "_Python-Constraints_"
+- Resolver problemas de satisfacción de restricciones con la librería `Python-Constraints`
 - Extraer información de archivos
 - Volcar resultados de algoritmos en archivos de salida
-- Implementación de A* en Rust
+- Implementación de $A^*$ en Rust
 - Comparación de distintas heurísticas admisibles y sus efectos en la resolución del problema
-- Resolución de problemas reales con algoritmos de búsqueda.
+- Resolución de problemas reales con algoritmos de búsqueda
 
-Se puede concluir que en el tiempo de realización de la práctica, se ha seguido una curva de aprendizaje bastante razonable y se han aprovechado conceptos del lenguaje _Python_ adquiridos en cursos anteriores.
+Se puede concluir que en el tiempo de realización de la práctica, se ha seguido una curva de aprendizaje bastante razonable y se han aprovechado conceptos del lenguaje `Python` adquiridos en cursos anteriores.
+
