@@ -3,3 +3,4 @@
 *.stat
 *.output
 .markdownlint.json
+*.pyc
