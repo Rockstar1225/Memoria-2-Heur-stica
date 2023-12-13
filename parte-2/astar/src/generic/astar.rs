@@ -26,7 +26,7 @@ pub struct SearchResult<T: State> {
 
 /// Generic interface to run an A* search on a given graph
 pub trait AStar {
-    type State: State + std::fmt::Debug;
+    type State: State;
     /// Expands a node, generating its successors
     ///
     /// # Parameters
@@ -76,7 +76,7 @@ pub trait AStar {
                 println!("Optimal path found. Reconstructing path...");
                 return (
                     Some(SearchResult {
-                        path: Self::reconstruct_path(g_score, state, h),
+                        path: Self::reconstruct_path(g_score, state),
                         cost,
                     }),
                     stats,
@@ -111,16 +111,12 @@ pub trait AStar {
     fn reconstruct_path(
         g_score: HashMap<Self::State, (usize, Option<Self::State>)>,
         end: Self::State,
-        h: impl Fn(&Self::State) -> usize,
     ) -> Vec<Self::State> {
         // Initializes the result vector with the end node
         let mut out = vec![end.clone()];
         let mut current = end;
         // While the current node has a parent, add that parent to the result vector
-        while let (cost, Some(prev)) = &g_score[&current] {
-            let heu = h(&current);
-            println!("Cost: {cost},\tHeuristic: {heu},\tTotal: {}", cost + heu);
-            // println!("{current:?}");
+        while let (_, Some(prev)) = &g_score[&current] {
             out.push(prev.clone());
             current = prev.clone();
         }

@@ -23,7 +23,7 @@ impl Config {
     ///
     /// Returns an error if the arguments couldn't be parsed correctly
     pub fn build(mut args: impl Iterator<Item = String>) -> Result<Self, &'static str> {
-        args.next();
+        args.next(); // Ignore program name argument
         let Some(input_file) = args.next() else {
             return Err("Missing input file");
         };
