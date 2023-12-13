@@ -62,13 +62,15 @@ La descripción de las restricciones dada la representación anterior del proble
     a \not = b & \quad \forall a, b \in V \\
     (a_y \not = b_y) \lor (a_x > b_x) & \quad \forall a \in V_U, b \in V_N \\
     \lnot (a_x = b_x = c_x) \lor \min(a_y, b_y, c_y) + 2 \not = \max(a_y, b_y, c_y) & \quad \forall a, b, c \in V, a \not = b \not = c, a \not = c \\
-    a_x \not = b_x \lor \min(a_y, b_y) + 1 \not = \max(a_y, b_y) \lor 1 \not = \min(a_y, b_y) \not = n - 1 & \quad \forall a, b \in V, a \not = b
+    a_x \not = b_x \lor \min(a_y, b_y) + 1 \not = \max(a_y, b_y) \lor 1 \not = \min(a_y, b_y) \not = n - 1 & \quad \forall a, b \in V, a \not = b \\
+    n >= 2 &
 \end{align}
 
 (1) Todos los vehículos se tienen que aparcar en plazas distintas del aparcamiento
 (2) Un vehículo de tipo urgente (TSU) no puede tener aparcado uno no urgente (TNU) en todas las posiciones de su derecha en su misma fila.
 (3) Ningún trio de vehículos puede ocupar 3 plazas consecutivas en una columna, ya que esto no cumpliría con la restricción de maniobrabilidad para el vehículo central
 (4) Igual a la restricción $(3)$, pero aplicado al caso de un vehículo aparcado en el bordes del parking. En este caso, un vehículo aparcado en el borde inferior o superior del parking no puede tener a otro aparcado en el lado opuesto al borde.
+(5) Restricción $(4)$ aplicada al caso de un parking con una única fila. Ninguna de las plazas del parking tiene un hueco libre arriba o abajo, luego el problema no tiene solución en este caso
 
 ### 2.2 Problema 2
 
@@ -249,4 +251,3 @@ Para esta práctica, hemos aprendido los diferentes conceptos:
 - Resolución de problemas reales con algoritmos de búsqueda
 
 Se puede concluir que en el tiempo de realización de la práctica, se ha seguido una curva de aprendizaje bastante razonable y se han aprovechado conceptos del lenguaje `Python` adquiridos en cursos anteriores.
-

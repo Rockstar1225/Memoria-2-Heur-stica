@@ -4,3 +4,5 @@
 *.output
 .markdownlint.json
 *.pyc
+venv
+**/CSP-tests/input*
