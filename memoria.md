@@ -27,7 +27,7 @@ header-includes: |
 
 El objetivo de la realización de esta práctica consiste en:
 
-- Modelar un problema y resolverlo utilizando SCP
+- Modelar un problema y resolverlo utilizando SCP.
 - Diseñar un problema y resolverlo usando búsqueda heurística (A*).
 
 ## 2 Descripción de los modelos
@@ -48,14 +48,14 @@ Las variables del problema indispensables para su resolución serán representad
 - Vehículos equipados con congelador: Estos vehículos solo podrán ser asignados plazas eléctricas en el parking.
 - Vehículos sin congelador: Estos vehículos podrán tener asignada cualquier plaza en el parking.
 
-De esta forma, se garantiza que se cumplen las restricciones sobre asignar a todos los vehículos a una plaza del parking, y que los vehículos con congelador tengan asignada una plaza eléctrica del parking
+De esta forma, se garantiza que se cumplen las restricciones sobre asignar a todos los vehículos a una plaza del parking, y que los vehículos con congelador tengan asignada una plaza eléctrica del parking.
 
 #### Modelado de Restricciones
 
 Para definir las restricciones, se ha dividido el conjunto de vehículos ($V$) en 2 subconjuntos disjuntos:
 
-- $V_U$: conjunto de vehículos urgentes (TSU)
-- $V_N$: conjunto de vehículos no urgentes (TNU)
+- $V_U$: conjunto de vehículos urgentes (TSU).
+- $V_N$: conjunto de vehículos no urgentes (TNU).
 
 La descripción de las restricciones dada la representación anterior del problema queda así:
 \begin{align}
@@ -66,11 +66,11 @@ La descripción de las restricciones dada la representación anterior del proble
     n \geq 2 \lor \|V\| = 0 &
 \end{align}
 
-(1) Todos los vehículos se tienen que aparcar en plazas distintas del aparcamiento
+(1) Todos los vehículos se tienen que aparcar en plazas distintas del aparcamiento.
 (2) Un vehículo de tipo urgente (TSU) no puede tener aparcado uno no urgente (TNU) en todas las posiciones de su derecha en su misma fila.
-(3) Ningún trio de vehículos puede ocupar 3 plazas consecutivas en una columna, ya que esto no cumpliría con la restricción de maniobrabilidad para el vehículo central
+(3) Ningún trio de vehículos puede ocupar 3 plazas consecutivas en una columna, ya que esto no cumpliría con la restricción de maniobrabilidad para el vehículo central.
 (4) Igual a la restricción $(3)$, pero aplicado al caso de un vehículo aparcado en el bordes del parking. En este caso, un vehículo aparcado en el borde inferior o superior del parking no puede tener a otro aparcado en el lado opuesto al borde.
-(5) Restricción $(4)$ aplicada al caso de un parking con una única fila. Ninguna de las plazas del parking tiene un hueco libre arriba o abajo, luego el problema no tiene solución en este caso
+(5) Restricción $(4)$ aplicada al caso de un parking con una única fila. Ninguna de las plazas del parking tiene un hueco libre arriba o abajo, luego el problema no tiene solución en este caso.
 
 ### 2.2 Problema 2
 
@@ -78,12 +78,12 @@ La descripción de las restricciones dada la representación anterior del proble
 
 Para resolver este problema, se han necesitado los siguientes parámetros globales (constantes):
 
-- $P_T \in \N$: plazas totales de la ambulancia
-- $P_{T_C} \in \N$: plazas reservadas para pacientes contagiosos
-- $E_0 \in \N$: energía inicial de la ambulancia, y valor al que se reinicia al pasar por el parking
-- $\text{Casillas} = \{1, 2, X, N, C, CN, CC, P\}$: conjunto de posibles contenidos de una casilla
-- $M_{ij} \in \text{Casillas} \quad (i, j \in \N, i < N, j < M)$: mapa del problema, donde cada elemento indica el contenido de la casilla correspondiente
-- $\operatorname{energía}: \text{Casillas} \rightarrow \N$: función que devuelve el coste de energía de pasar por una casilla
+- $P_T \in \N$: plazas totales de la ambulancia.
+- $P_{T_C} \in \N$: plazas reservadas para pacientes contagiosos.
+- $E_0 \in \N$: energía inicial de la ambulancia, y valor al que se reinicia al pasar por el parking.
+- $\text{Casillas} = \{1, 2, X, N, C, CN, CC, P\}$: conjunto de posibles contenidos de una casilla.
+- $M_{ij} \in \text{Casillas} \quad (i, j \in \N, i < N, j < M)$: mapa del problema, donde cada elemento indica el contenido de la casilla correspondiente.
+- $\operatorname{energía}: \text{Casillas} \rightarrow \N$: función que devuelve el coste de energía de pasar por una casilla.
   $$\operatorname{energía}(c) = \begin{cases}
       2 & c = 2 \\
       1 & X \not = c \not = 2
@@ -93,11 +93,11 @@ Para resolver este problema, se han necesitado los siguientes parámetros global
 
 Los posibles estados de la ambulancia se han representado con una tupla con los siguientes valores:
 
-- $P_N \in \N$: número de plazas actualmente ocupadas por pacientes no contagiosos
-- $P_C \in \N$: número de plazas actualmente ocupadas por pacientes contagiosos
-- $E \in \N$: energía actual de la ambulancia
-- $\text{Pos} \in \N^{2 \times 1}$: posición actual de la ambulancia
-- $\text{Visitados}$: campo de bits que codifica los pacientes que han sido recogidos, donde la posición $i$ indica si el paciente con ID $i$ ha sido recogido o no. Este ID se obtiene a partir de posición del paciente. Esto se eligió para reducir la cantidad de memoria necesaria para codificar cada estado
+- $P_N \in \N$: número de plazas actualmente ocupadas por pacientes no contagiosos.
+- $P_C \in \N$: número de plazas actualmente ocupadas por pacientes contagiosos.
+- $E \in \N$: energía actual de la ambulancia.
+- $\text{Pos} \in \N^{2 \times 1}$: posición actual de la ambulancia.
+- $\text{Visitados}$: campo de bits que codifica los pacientes que han sido recogidos, donde la posición $i$ indica si el paciente con ID $i$ ha sido recogido o no. Este ID se obtiene a partir de posición del paciente. Esto se eligió para reducir la cantidad de memoria necesaria para codificar cada estado.
 
 Con esto, el estado inicial sería el siguiente:
 
@@ -117,6 +117,7 @@ El estado final sería cualquier estado que cumpla las siguientes condiciones:
 Este problema cuenta con un operador: $\operatorname{move}(x, y)$. Este operador mueve la ambulancia según el desplazamiento $(x, y)$. Para cada estado, sus sucesores serán los resultantes de aplicar este operador con los desplazamientos $(-1, 0)$, $(1, 0)$, $(0, -1)$, y $(0, 1)$, los cuales se corresponden con los movimientos horizontales y verticales permitidos.
 
 Las precondiciones son las siguientes:
+\setcounter{equation}{0}
 \begin{align}
     0 \leq \text{Pos}_x + x < N \\
     0 \leq \text{Pos}_y + y < M \\
@@ -125,14 +126,14 @@ Las precondiciones son las siguientes:
 \end{align}
 
 \begin{itemize}
-\item[$(1)(2)$] La nueva posición ($\text{Pos} + (x, y)$) está dentro del mapa
-\item[$(3)$] La nueva posición ($\text{Pos} + (x, y)$) se puede transitar
-\item[$(4)$] La ambulancia tiene la suficiente energía para atravesar la casilla
+\item[$(1)(2)$] La nueva posición ($\text{Pos} + (x, y)$) está dentro del mapa.
+\item[$(3)$] La nueva posición ($\text{Pos} + (x, y)$) se puede transitar.
+\item[$(4)$] La ambulancia tiene la suficiente energía para atravesar la casilla.
 \end{itemize}
 
 Los efectos son los siguientes:
 
-- Se copian los valores del estado antes de aplicar el operador
+- Se copian los valores del estado antes de aplicar el operador.
 - $\text{Pos} = \text{Pos} + (x, y)$
 - $E = E - \operatorname{energía}(M[\text{Pos} + (x, y)])$
 - Si $M[\text{Pos} + (x, y)] = CN \Rightarrow P_N = 0$
@@ -155,99 +156,85 @@ La segunda heurística es una modificación de la primera. En el primer paso, si
 
 Si la ambulancia tiene algún paciente contagioso, tendrá que pasar por el centro de pacientes contagiosos antes de recoger a algún otro paciente no contagioso. Por lo tanto, añadir en estos casos a la heurística original una estimación de este coste que siempre subestima el real no hace que deje de ser admisible. Además, como esta heurística es la primera con un sumando extra, está más informada.
 
+\clearpage
+
 ## 3 Análisis de resultados
 
 ### 3.1 Problema 1
 
 #### Resultado Obtenido
 
-Según nuestra implementación en Python con la librería `Python-Constraints` de este problema, al ejecutarlo con un archivo de ejemplo (ejemplo del enunciado), se obtienen $2175288$ posibles soluciones.
+Según nuestra implementación en `Python` con la librería `Python-Constraints` de este problema, al ejecutarlo con un archivo de ejemplo (ejemplo del enunciado), se obtienen $2175288$ posibles soluciones.
 
 Este dato es imposible de comprobar ya que se tardaría mucho tiempo en realizar las combinaciones de todas las casillas a mano. Para demostrar que las soluciones que arroja nuestro programa son las necesarias, se realizarán una serie de tests desarrollados en `bash`.
-
-#### Definición de casos de prueba
-
-A la hora de realización de los tests mencionados, se han tenido en cuenta los siguientes casos de uso para los diferentes inputs del programa:
-
-1) Parking con mismo número de posiciones eléctricas que vehículos con congelador (Posiciones eléctricas consecutivas).
-2) Parking con más plazas eléctricas de las necesarias. Entre las soluciones disponibles de este caso, se encontrarán algunas en las que un vehículo sin congelador por lo menos haya ocupado una plaza eléctrica.
-3) Parking con mismo número de plazas eléctricas que de vehículos con congelador (Posiciones eléctricas no consecutivas).
-4) Parking con grupos de tres plazas eléctricas consecutivas. La finalidad es testear la restricción que verifica la maniobrabilidad en el parking.
-5) Parking con posiciones consecutivas en los bordes. Testeo de restricciones en las filas primera y última.
-
-#### Planteamiento de tests
-
-Los archivos generados como _"Inputs"_ de nuestro programa `CSPParking.py` se crean de la siguiente manera:
-
-1) Para el primer caso de prueba, se definirá un parking de tamaño **2x1**. En dicho parking las dos casillas son eléctricas y solo entrarán al parking 2 vehículos con congelador. En este problema, la restricción de tipos se ve relajada debido a que no hace efecto en un parking de una columna. La restricción de maniobrabilidad también lo está debido a que se necesita al menos un trio para poder tener influencia. La restricción que se prueba entonces es la de consecutividad en los bordes. Es por eso que, al no poder salir los coches del parking fácilmente al haber aparcado,  no existen soluciones para este problema.
-
-2) En el segundo caso de prueba, se creará un parking de tamaño **5x6**. En este, se habilitarán cuatro casillas eléctricas no consecutivas en los bordes de las treinta disponibles. También las ambulancias que necesitarán aparcar en dicho parking serán tres con congelador y de distintos tipos de urgencia. Las restricciones que tienen efecto en las soluciones son las de los bordes (en las soluciones, no saldrán las que tengan una casilla contigua a las eléctricas ocupadas), la de posiciones consecutivas (no puede haber un trio de posiciones consecutivas en ninguna solución) y la restricción de tipos (siempre los vehículos urgentes tendrán a los no urgentes detrás suya y no al revés).
-
-3) Para el tercer caso de prueba, se construirá un parking de dimensiones **3x3**. Para este, las posiciones eléctricas serán las cuatro esquinas del cuadrado. Cuatro vehículos eléctricos querrían ocupar su plaza en el aparcamiento (uno de tipo urgente y tres no urgentes). Ya que las posiciones eléctricas no son consecutivas mutuamente y no hay más ambulancias que las eléctricas, la única restricción que tiene efecto sobre las soluciones es la de los tipos (urgente y no urgente). Entre las soluciones, se debería de observar que no existen soluciones que no tengan al vehículo urgente (vehículo con id de 1) en la esquina superior derecha o inferior derecha.
-
-4) En este caso de prueba, se edificará un parking de tamaño **6x4**. Para probar la maniobrabilidad de las posiciones consecutivas, se habilitarán seis posiciones eléctricas organizadas en trios consecutivos (concretamente en la columna 2 y 4). Para este escenario, seis ambulancias eléctricas de tipo no importante van a ingresar al parking. Dado que todos los vehículos son eléctricos y obligatoriamente tienen que estar en plazas eléctricas consecutivas, el algoritmo no dará soluciones válidas ya que también se restringen las posiciones consecutivas por otro lado.
-
-5) Para el último caso de prueba, se definirá un aparcamiento de tamaño **3x3**. En él, no habrá trios de posiciones consecutivas pero si posiciones eléctricas consecutivas en los bordes de dicho cuadrado (seis posiciones). Todos los seis vehículos que desean aparcar son eléctricos y forzosamente deben estar en posiciones eléctricas, que a la vez están consecutivas, luego el algoritmo de resolución no dará soluciones válidas al igual que en el anterior caso de prueba.
-
-#### Comprobación de soluciones
-
-Para el método de comprobación de las soluciones obtenidas, los resultados siguientes son los esperados:
-
-1) Los casos de prueba 1, 4 y 5 no deben tener soluciones válidas para los archivos generados.
-
-2) El caso de prueba 2 debería dar $4! - 4*2 = 16$ soluciones. Esto se puede comprobar ya que $4!$ soluciones son las posibles combinaciones de $4$ elementos en $4$ plazas de parking. Dado que hay dos vehículos que son de tipo urgente, cada uno resta al total de soluciones $4$ que no se pueden dar debido a la restricción de tipos.
-
-3) El caso de prueba 3 debería arrojarnos $\frac{4!}{2}$ soluciones debido a que hay $4!$ posibles maneras de permutar $4$ vehículos en $4$ posibles plazas del mismo. Como la mitad de las soluciones no respetan la restricción de tipo dejando a la ambulancia urgente en las esquinas superior izquierda e inferior izquierda, dichas soluciones se descartan de las finales (cumpliendo así todas las restricciones).
-
-#### Conclusiones de los tests
-
-Dado que los resultados obtenidos por los tests son los esperados, los tests se han ejecutado correctamente, probando así que nuestro programa es correcto.
-
-### 3.2 Problema 2
-
-#### Resultado obtenido
-
-Para el problema dado, el programa encuentra 2 soluciones óptimas con coste 88 función de la heurística usada. Para la primera heurística tiene una longitud del plan de 85 pasos, mientras que para la segunda tiene una longitud de 83 pasos
 
 #### Casos de prueba
 
 Los casos de prueba implementados son los siguientes:
 
-1) Mapa lineal con un único paciente contagioso entre el parking y el centro de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos y volver
-2) Mapa lineal con un único paciente no contagioso entre el parking y el centro de pacientes contagiosos. La solución óptima será ir al centro de pacientes no contagiosos y volver
-3) Mapa lineal con un paciente no contagioso seguido de un paciente contagioso, seguido del centro de pacientes contagiosos y de pacientes no contagiosos. La solución óptima será ir al centro de pacientes no contagiosos y volver
-4) Mapa lineal con un paciente no contagioso seguido de un paciente contagioso, seguido del centro de pacientes no contagiosos y de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos y volver, y se entregará al paciente no contagioso a la vuelta
-5) Mapa lineal con un paciente contagioso seguido de un paciente no contagioso, seguido del centro de pacientes no contagiosos y de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos, volver a por el paciente no contagioso, ir al centro de pacientes no contagiosos, y volver al parking
-6) Mapa lineal con un paciente contagioso seguido de un paciente no contagioso, seguido del centro de pacientes contagiosos y de pacientes no contagiosos. La solución óptima será ir al centro de pacientes contagiosos, volver a por el paciente no contagioso, ir al centro de pacientes no contagiosos, y volver al parking
-7) Mapa en el que los pacientes/centros de pacientes están separados del parking por una casilla no transitable. No hay solución
-8) Mapa con un paciente no contagioso seguido de 2 caminos con diferente longitud al centro de pacientes no contagiosos. La solución óptima será ir y volver del centro por el camino más corto
-9) Mapa lineal con un único paciente no contagioso entre el parking y su centro, en el cual hay la energía justa para ir a su centro y volver. La solución óptima es ir al centro del paciente y volver
-10) Mapa lineal en el cual el parking está entre un paciente no contagioso y su centro, y solo hay energía suficiente para llegar al centro desde el paciente si se recarga en el parking. La solución óptima es recoger al paciente, entregarlo en su centro, y volver al parking
-11) Mapa con un único paciente no contagioso en el cual hay energía suficiente para ir y volver desde el parking al paciente o a su centro, pero no para realizar ambos en un único trayecto. La solución óptima es recoger al paciente no contagioso, volver al parking, ir a su centro, y volver al parking
-12) Mapa lineal con más pacientes no contagiosos de los que puede llevar la ambulancia entre el parking y su centro. La solución óptima es ir a su centro, volver a por los restantes, volver a ir a su centro, y volver al parking
-13) Mapa lineal con suficientes pacientes no contagiosos como para tener que usar las plazas de pacientes contagiosos pero no como para llenar la ambulancia, seguidos de un paciente contagioso y los centros de los pacientes. La solución óptima es ir al centro de pacientes no contagiosos, volver a por el paciente contagioso, ir al centro de pacientes contagiosos, y volver al parking
-14) Mapa lineal con más pacientes contagiosos de los que puede llevar la ambulancia entre el parking y su centro. La solución óptima es ir a su centro, volver a por los restantes, volver a ir a su centro, y volver al parking
+1) Parking de **1x2** con una única ambulancia. No hay solución ya que no se puede cumplir la restricción $(5)$
+2) Parking de **2x1** con 2 vehículos eléctricos y 2 plazas eléctricas en la misma columna. No hay solución ya que no se puede cumplir la restricción $(4)$
+3) Parking de **3x1** con 2 vehículos eléctricos y 2 plazas eléctricas en la misma columna al lado del borde superior del parking. No hay solución ya que no se puede cumplir la restricción $(4)$
+4) Parking de **3x1** con 2 vehículos eléctricos y 2 plazas eléctricas en la misma columna al lado del borde inferior del parking. No hay solución ya que no se puede cumplir la restricción $(4)$
+5) Parking de **4x1** con 3 vehículos eléctricos y 3 plazas eléctricas seguidas en la misma columna. No hay solución ya que no se puede cumplir la restricción $(3)$
+6) Parking de **3x1** con 4 vehículos. No hay solución ya que no se puede cumplir la restricción $(1)$
+7) Parking de **3x1** filas con 3 vehículos eléctricos y 2 plazas eléctricas. No hay solución ya que no se puede asignar a cada vehículo eléctrico una plaza eléctrica distinta.
+8) Parking de **2x2** con un vehículo eléctrico TSU, un vehículo no eléctrico TNU, y 1 plaza eléctrica en la primera columna. Hay una única solución en la que el vehículo TNU está en la esquina opuesta al TSU debido a la restricción $(2)$
+9) Parking de **2x2** con un vehículo eléctrico TSU, un vehículo no eléctrico TSU, y 1 plaza eléctrica en la primera columna. Hay 2 soluciones en la cual el vehículo eléctrico está en la plaza eléctrica y el no eléctrico está en la segunda columna debido a la restricción $(4)$
+10) Parking de **2x2** con un vehículo eléctrico TSU, un vehículo no eléctrico TNU, y 1 plaza eléctrica en la segunda columna. Hay 2 soluciones en las cuales el vehículo eléctrico está en la plaza eléctrica y el no eléctrico está en la primera columna debido a la restricción $(4)$
+11) Parking de **3x3** con 2 vehículos eléctricos TNU y 3 plazas eléctricas en la diagonal principal. Hay $6$ soluciones correspondientes a cada asignación de los vehículos a las plazas eléctricas.
+12) Parking de **2x2** con 2 vehículos no eléctricos TNU y 2 plazas eléctricas en la diagonal principal. Hay $8$ soluciones correspondientes a cada asignación de vehículos a las plazas con los vehículos en columnas distintas.
+13) Parking de **3x2** con 1 vehículo eléctrico TSU, 2 vehículos no eléctricos TNU, y 2 plazas eléctricas en primera columna. Hay $6$ soluciones en total: $2$ correspondientes al vehículo eléctrico en la plaza eléctrica central y los vehículos no eléctricos en las esquinas de la segunda columna, y $4$ correspondientes al vehículo eléctrico en la plaza eléctrica del borde, y uno de los vehículos no eléctricos en el borde opuesto de la primera columna y el otro en una de las $2$ plazas de la segunda columna cuya fila es distinta a la del vehículo eléctrico.
 
-Tras ejecutar el programa con todos los casos de prueba, este obtiene siempre la solución óptima si existe
+Tras ejecutar el programa con todos los casos de prueba, este obtiene siempre las soluciones esperadas, luego el programa es correcto.
+
+### 3.2 Problema 2
+
+#### Resultado obtenido
+
+Para el problema dado, el programa encuentra 2 soluciones óptimas con coste 88 función de la heurística usada. Para la primera heurística tiene una longitud del plan de 85 pasos, mientras que para la segunda tiene una longitud de 83 pasos.
+
+#### Casos de prueba
+
+Los casos de prueba implementados son los siguientes:
+
+1) Mapa lineal con un único paciente contagioso entre el parking y el centro de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos y volver.
+2) Mapa lineal con un único paciente no contagioso entre el parking y el centro de pacientes contagiosos. La solución óptima será ir al centro de pacientes no contagiosos y volver.
+3) Mapa lineal con un paciente no contagioso seguido de un paciente contagioso, seguido del centro de pacientes contagiosos y de pacientes no contagiosos. La solución óptima será ir al centro de pacientes no contagiosos y volver.
+4) Mapa lineal con un paciente no contagioso seguido de un paciente contagioso, seguido del centro de pacientes no contagiosos y de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos y volver, y se entregará al paciente no contagioso a la vuelta.
+5) Mapa lineal con un paciente contagioso seguido de un paciente no contagioso, seguido del centro de pacientes no contagiosos y de pacientes contagiosos. La solución óptima será ir al centro de pacientes contagiosos, volver a por el paciente no contagioso, ir al centro de pacientes no contagiosos, y volver al parking.
+6) Mapa lineal con un paciente contagioso seguido de un paciente no contagioso, seguido del centro de pacientes contagiosos y de pacientes no contagiosos. La solución óptima será ir al centro de pacientes contagiosos, volver a por el paciente no contagioso, ir al centro de pacientes no contagiosos, y volver al parking.
+7) Mapa en el que los pacientes/centros de pacientes están separados del parking por una casilla no transitable. No hay solución.
+8) Mapa con un paciente no contagioso seguido de 2 caminos con diferente longitud al centro de pacientes no contagiosos. La solución óptima será ir y volver del centro por el camino más corto.
+9) Mapa lineal con un único paciente no contagioso entre el parking y su centro, en el cual hay la energía justa para ir a su centro y volver. La solución óptima es ir al centro del paciente y volver.
+10) Mapa lineal en el cual el parking está entre un paciente no contagioso y su centro, y solo hay energía suficiente para llegar al centro desde el paciente si se recarga en el parking. La solución óptima es recoger al paciente, entregarlo en su centro, y volver al parking.
+11) Mapa con un único paciente no contagioso en el cual hay energía suficiente para ir y volver desde el parking al paciente o a su centro, pero no para realizar ambos en un único trayecto. La solución óptima es recoger al paciente no contagioso, volver al parking, ir a su centro, y volver al parking.
+12) Mapa lineal con más pacientes no contagiosos de los que puede llevar la ambulancia entre el parking y su centro. La solución óptima es ir a su centro, volver a por los restantes, volver a ir a su centro, y volver al parking.
+13) Mapa lineal con suficientes pacientes no contagiosos como para tener que usar las plazas de pacientes contagiosos pero no como para llenar la ambulancia, seguidos de un paciente contagioso y los centros de los pacientes. La solución óptima es ir al centro de pacientes no contagiosos, volver a por el paciente contagioso, ir al centro de pacientes contagiosos, y volver al parking.
+14) Mapa lineal con más pacientes contagiosos de los que puede llevar la ambulancia entre el parking y su centro. La solución óptima es ir a su centro, volver a por los restantes, volver a ir a su centro, y volver al parking.
+
+Tras ejecutar el programa con todos los casos de prueba, este obtiene siempre la solución óptima si existe, luego el programa es correcto.
 
 #### Rendimiento
 
 Debido a la similitud de las heurísticas, en muchos de los casos de prueba el resultado es el mismo. Sin embargo, en los casos en los que la modificación de la segunda heurística se usa, esta es capaz de expandir significativamente menos nodos.
 
-Para un caso complejo como el problema dado, la primera heurística necesita expandir $\sim 174$ millones de estados, mientras que la segunda es capaz de expandir únicamente $\sim 87$ millones
+Para un caso complejo como el problema dado, la primera heurística necesita expandir $\sim 174$ millones de estados, mientras que la segunda es capaz de expandir únicamente $\sim 87$ millones.
+
+\clearpage
 
 ## 4 Conclusión
 
 Para esta práctica, hemos aprendido los diferentes conceptos:
 
-- Representar problemas en `Python`
-- Modelado de problemas reales
-- Representado de las restricciones del problema (funciones lambda)
-- Resolver problemas de satisfacción de restricciones con la librería `Python-Constraints`
-- Extraer información de archivos
-- Volcar resultados de algoritmos en archivos de salida
-- Implementación de $A^*$ en Rust
-- Comparación de distintas heurísticas admisibles y sus efectos en la resolución del problema
-- Resolución de problemas reales con algoritmos de búsqueda
+- Representar problemas en `Python`.
+- Modelado de problemas reales.
+- Representado de las restricciones del problema (funciones lambda).
+- Resolver problemas de satisfacción de restricciones con la librería `Python-Constraints`.
+- Extraer información de archivos.
+- Volcar resultados de algoritmos en archivos de salida.
+- Implementación de $A^*$ en `Rust`.
+- Comparación de distintas heurísticas admisibles y sus efectos en la resolución del problema.
+- Resolución de problemas reales con algoritmos de búsqueda.
 
 Se puede concluir que en el tiempo de realización de la práctica, se ha seguido una curva de aprendizaje bastante razonable y se han aprovechado conceptos del lenguaje `Python` adquiridos en cursos anteriores.
