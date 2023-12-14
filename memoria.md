@@ -63,7 +63,7 @@ La descripción de las restricciones dada la representación anterior del proble
     (a_y \not = b_y) \lor (a_x > b_x) & \quad \forall a \in V_U, b \in V_N \\
     \lnot (a_x = b_x = c_x) \lor \min(a_y, b_y, c_y) + 2 \not = \max(a_y, b_y, c_y) & \quad \forall a, b, c \in V, a \not = b \not = c, a \not = c \\
     a_x \not = b_x \lor \min(a_y, b_y) + 1 \not = \max(a_y, b_y) \lor 1 \not = \min(a_y, b_y) \not = n - 1 & \quad \forall a, b \in V, a \not = b \\
-    n >= 2 &
+    n \geq 2 \lor \|V\| = 0 &
 \end{align}
 
 (1) Todos los vehículos se tienen que aparcar en plazas distintas del aparcamiento

@@ -57,7 +57,7 @@ def main():
 
     # añadir restricción: si el parking solo tiene 1 fila, ningún vehículo
     # tendrá una casilla vacía arriba/abajo y el problema no tiene solución
-    problem.addConstraint(lambda *_: parser.rows != 1)
+    problem.addConstraint(lambda *_: parser.rows != 1 or len(vehicles) == 0)
 
     # añadir restricción: las posiciones de un tipo TSU son mayores a las de un dispositivo TNU.
     for x, y in product(parser.group_by_type("TSU"), parser.group_by_type("TNU")):
