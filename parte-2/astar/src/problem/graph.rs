@@ -124,7 +124,7 @@ impl Graph {
             pacientes_c: 0,
             energy: self.start_energy,
             pos: self.targets.parking,
-            visited: BitField::new(self.targets.patient_amount()),
+            visited: BitField::new(self.targets.patients.len()),
         }
     }
 
@@ -174,57 +174,6 @@ impl Graph {
         Some((state, cost.into()))
     }
 
-    /// Calculates the distance between 2 given positions
-    #[must_use]
-    const fn distance(a: &Point<usize>, b: &Point<usize>) -> usize {
-        a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
-    }
-
-    /// Checks which patient types have undelivered patients,
-    /// returning the tuple (non-contagious, contagious)
-    #[must_use]
-    fn remaining(&self, state: &Vehicle) -> (bool, bool) {
-        let check = |patients: &[Point<usize>]| {
-            patients
-                .iter()
-                .any(|pos| !state.visited.get(self.targets.id(pos)))
-        };
-        (
-            state.pacientes_n > 0 || check(&self.targets.patients_n),
-            state.pacientes_c > 0 || check(&self.targets.patients_c),
-        )
-    }
-
-    /// Goes to the furthest non-visited position from
-    /// the given positions and estimates its distance
-    ///
-    /// # Parameters
-    ///
-    /// * `visited`: Filter for the possible targets
-    /// * `pos`: Current position
-    /// * `positions`: Possible targets
-    #[must_use]
-    fn go_furthest<'a, I>(&self, visited: &BitField, pos: &mut Point<usize>, positions: I) -> usize
-    where
-        I: Iterator<Item = &'a Point<usize>>,
-    {
-        positions
-            // Filters the visited positions, and calculates the distance for the rest
-            .filter_map(|x| {
-                if visited.get(self.targets.id(x)) {
-                    None
-                } else {
-                    Some((Self::distance(pos, x), x))
-                }
-            })
-            // Get the tuple with the maximum distance value
-            .max_by_key(|&x| x.0)
-            .map_or(0, |res| {
-                *pos = *res.1;
-                res.0
-            })
-    }
-
     /// Estimates the cost of delivering the indicated patient types and going back to the parking
     ///
     /// # Parameters
@@ -242,56 +191,51 @@ impl Graph {
         let mut distance = 0;
         // If there are contagious patients, goes to the contagious center to drop them
         if pacientes_c {
-            distance += Self::distance(&pos, &self.targets.center_c);
+            distance += TileMap::distance(&pos, &self.targets.center_c);
             pos = self.targets.center_c;
         }
         // If there are non-contagious patients, goes to the non-contagious center to drop them
         if pacientes_n {
-            distance += Self::distance(&pos, &self.targets.center_n);
+            distance += TileMap::distance(&pos, &self.targets.center_n);
             pos = self.targets.center_n;
         }
         // Adds the distance to return to the parking
-        distance + Self::distance(&pos, &self.targets.parking)
+        distance + TileMap::distance(&pos, &self.targets.parking)
+    }
+
+    fn max_cost(
+        &self,
+        state: &Vehicle,
+        get_cost: impl Fn(&Vehicle, &(Point<usize>, usize)) -> usize,
+    ) -> usize {
+        self.targets
+            .patients
+            .iter()
+            .enumerate()
+            // Filters the visited positions
+            .filter(|(i, _)| !state.visited.get(*i))
+            // Calculates the distance to each patient and adds the cost of finishing from that
+            // patient
+            .map(|(_, x)| get_cost(state, x))
+            // Get the maximum distance value
+            .max()
+            .unwrap_or_else(|| {
+                self.finish_cost(state.pos, state.pacientes_c != 0, state.pacientes_n != 0)
+            })
     }
 
     // First heuristic
     #[must_use]
     pub fn h1(&self, state: &Vehicle) -> usize {
-        // Initializes the control variables
-        let (mut distance, mut pos) = (0, state.pos);
-        // If it already has contagious patients, tries to go to the furthest one
-        if state.pacientes_c > 0 {
-            distance += self.go_furthest(&state.visited, &mut pos, self.targets.patients_c.iter());
-        // If it doesn't already have contagious patients, tries to go to the furthest patient
-        } else {
-            distance += self.go_furthest(&state.visited, &mut pos, self.targets.all_patients());
-        };
-        let (pacientes_n, pacientes_c) = self.remaining(state);
-        distance + self.finish_cost(pos, pacientes_c, pacientes_n)
+        self.max_cost(state, |_, (_, cost)| *cost)
     }
 
     // Second heuristic
     #[must_use]
     pub fn h2(&self, state: &Vehicle) -> usize {
-        // Initializes the control variables
-        let (mut distance, mut pos) = (0, state.pos);
-        // If it already has contagious patients, tries to go to the furthest one and deliver them
-        let (pacientes_n, pacientes_c) = if state.pacientes_c > 0 {
-            distance += self.go_furthest(&state.visited, &mut pos, self.targets.patients_c.iter());
-            // Goes to the contagious center to drop them
-            distance += Self::distance(&pos, &self.targets.center_c);
-            pos = self.targets.center_c;
-            // Tries to go to the furthest non-contagious patient (assuming
-            // all contagious patients were dropped on the previous step)
-            let res = self.go_furthest(&state.visited, &mut pos, self.targets.patients_n.iter());
-            distance += res;
-            (res != 0, false)
-        // If it doesn't already have contagious patients, tries to go to the furthest patient and deliver them
-        } else {
-            distance += self.go_furthest(&state.visited, &mut pos, self.targets.all_patients());
-            self.remaining(state)
-        };
-        distance + self.finish_cost(pos, pacientes_c, pacientes_n)
+        self.max_cost(state, |state, (pos, cost)| {
+            TileMap::distance(&state.pos, pos) + cost
+        })
     }
 }
 

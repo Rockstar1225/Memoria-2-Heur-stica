@@ -76,10 +76,9 @@ pub struct TileMap {
 /// Possible targets information
 #[derive(Default, Debug)]
 pub struct Targets {
-    /// Position of the non-contagious patients
-    pub patients_n: Vec<Point<usize>>,
-    /// Position of the contagious patients
-    pub patients_c: Vec<Point<usize>>,
+    /// Position of the patients, and estimated cost of
+    /// going from them to their center and to the parking
+    pub patients: Vec<(Point<usize>, usize)>,
     /// Position of the non-contagious center
     pub center_n: Point<usize>,
     /// Position of the contagious center
@@ -123,26 +122,31 @@ impl TileMap {
     pub fn get_targets(&self) -> Targets {
         // Initializes the result
         let mut targets = Targets::default();
+        let mut patients = vec![];
         // Iterates through the tiles in the map
         for (k, tile) in self.grid.iter().enumerate() {
+            // Stores the position of important tiles
             match tile {
-                // If it's a patient, adds its ID and position
-                Tile::PacienteC | Tile::PacienteN => {
-                    let pos = self.position(k);
-                    // targets.patients_id.insert(pos, targets.patients_id.len());
-                    match tile {
-                        Tile::PacienteN => targets.patients_n.push(pos),
-                        Tile::PacienteC => targets.patients_c.push(pos),
-                        _ => unreachable!(), // We already know the current tile is a patient
-                    }
-                }
-                // If it's a center/parking, records its position
+                Tile::PacienteC | Tile::PacienteN => patients.push(self.position(k)),
                 Tile::CenterN => targets.center_n = self.position(k),
                 Tile::CenterC => targets.center_c = self.position(k),
                 Tile::Parking => targets.parking = self.position(k),
                 _ => (),
             }
         }
+        // Calculates the distance of going from each center to the parking
+        let dist_n = Self::distance(&targets.center_n, &targets.parking);
+        let dist_c = Self::distance(&targets.center_c, &targets.parking);
+        let distances = [(&targets.center_n, dist_n), (&targets.center_c, dist_c)];
+        // For each patient on the map, calculates the cost of going
+        // from its position to its center and to the parking
+        targets.patients = patients
+            .into_iter()
+            .map(|pos| {
+                let i = usize::from(*self.tile(&pos) == Tile::PacienteN);
+                (pos, Self::distance(&pos, distances[i].0) + distances[i].1)
+            })
+            .collect();
         targets // Returns the result
     }
 
@@ -176,19 +180,15 @@ impl TileMap {
     pub fn is_traversable(&self, pos: &Point<usize>) -> bool {
         pos.0 < self.size.0 && pos.1 < self.size.1 && *self.tile(pos) != Tile::Wall
     }
+
+    /// Calculates the distance between 2 given positions
+    #[must_use]
+    pub const fn distance(a: &Point<usize>, b: &Point<usize>) -> usize {
+        a.0.abs_diff(b.0) + a.1.abs_diff(b.1)
+    }
 }
 
 impl Targets {
-    /// Returns an iterator over the positions of all patients
-    pub fn all_patients(&self) -> impl Iterator<Item = &Point<usize>> {
-        self.patients_n.iter().chain(self.patients_c.iter())
-    }
-
-    /// Returns an iterator over the positions of all patients
-    pub fn patient_amount(&self) -> usize {
-        self.patients_n.len() + self.patients_c.len()
-    }
-
     /// Gets the ID of a patient according to their position
     ///
     /// # Parameters
@@ -199,8 +199,9 @@ impl Targets {
     ///
     /// Panics if a position that doesn't correspond to a patient is given
     pub fn id(&self, pos: &Point<usize>) -> usize {
-        self.all_patients()
-            .position(|x| x == pos)
+        self.patients
+            .iter()
+            .position(|(x, _)| x == pos)
             .expect("There shouldn't be attempts to search for positions that aren't patients")
     }
 }
