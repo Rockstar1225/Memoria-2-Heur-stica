@@ -149,9 +149,9 @@ El coste del operador es $\operatorname{energía}(M[\text{Pos} + (x, y)])$
 
 #### Heurísticas
 
-Para las heurísticas definidas se ha usado la distancia de Manhattan para estimar la distancia entre dos posiciones dadas.
+Para las heurísticas definidas se ha usado la distancia de Manhattan para estimar la distancia entre dos posiciones dadas, la cual resulta de relajar la precondición $(3)$ y asumir que todas las casillas tienen un coste unitario (lo cual se puede hacer ya que el coste real siempre es superior o igual a esto)
 
-La primera heurística consiste en el coste máximo de la distancia estimada entre cada paciente no recogido y su centro, y este centro y el parking. Además, en el caso de no quedar pacientes sin recoger, usa la distancia al centro de pacientes contagiosos, de este al centro de pacientes no contagiosos, y de ahí al parking (saltándose los viajes a los centros si la ambulancia no tiene pacientes de su respectivo tipo). Esto relaja las precondiciones $(3)$ y $(4)$, las restricciones de la capacidad del vehículo, y la restricción de recoger a todos los pacientes (ya que asume que el paciente con la distancia calculada máxima es el único paciente restante). Como esta heurística se obtiene por relajación de restricciones, es *admisible*.
+La primera heurística consiste en el coste máximo de la distancia estimada entre cada paciente no recogido y su centro, y este centro y el parking. Además, en el caso de no quedar pacientes sin recoger, usa la distancia al centro de pacientes contagiosos, de este al centro de pacientes no contagiosos, y de ahí al parking (saltándose los viajes a los centros si la ambulancia no tiene pacientes de su respectivo tipo). Esto relaja la precondición $(4)$, las restricciones de la capacidad del vehículo, y la restricción de recoger a todos los pacientes (ya que asume que el paciente con la distancia calculada máxima es el único paciente restante). Como esta heurística se obtiene por relajación de restricciones, es *admisible*.
 
 La segunda heurística es una modificación de la primera. En esta, se le añade a la distancia calculada de cada paciente la distancia a este desde la posición actual de la ambulancia. Esta heurística también es *admisible* por el mismo motivo que la anterior, ya que relaja las mismas restricciones. Además, como la distancia estimada entre la posición de la ambulancia y la posición de cualquier paciente no puede ser negativa, esta heurística es *más informada* que la primera.
 
@@ -191,7 +191,7 @@ Tras ejecutar el programa con todos los casos de prueba, este obtiene siempre la
 
 #### Resultado obtenido
 
-Para el problema dado con un mapa de **10x10**, el programa no termina su ejecución por problemas de memoria. Por esto, se ha decidido usar una versión reducida de este mapa con un tamaño de **8x10** (caso de prueba 17). Para este problema, el programa encuentra una solución óptima de coste $79$ y longitud del plan $73$.
+Para el problema dado con un mapa de **10x10**, después de múltiples horas de ejecución, el programa no termina su ejecución por problemas de memoria. Por esto, se ha decidido usar una versión reducida de este mapa con un tamaño de **8x10** (caso de prueba 17). Para este problema, el programa encuentra una solución óptima de coste $79$ y longitud del plan $73$.
 
 #### Casos de prueba
 

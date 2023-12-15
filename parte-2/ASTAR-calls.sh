@@ -26,3 +26,9 @@ python3 ASTARTraslados.py ./ASTAR-tests/mapa13.csv 1
 python3 ASTARTraslados.py ./ASTAR-tests/mapa13.csv 2
 python3 ASTARTraslados.py ./ASTAR-tests/mapa14.csv 1
 python3 ASTARTraslados.py ./ASTAR-tests/mapa14.csv 2
+python3 ASTARTraslados.py ./ASTAR-tests/mapa15.csv 1
+python3 ASTARTraslados.py ./ASTAR-tests/mapa15.csv 2
+python3 ASTARTraslados.py ./ASTAR-tests/mapa16.csv 1
+python3 ASTARTraslados.py ./ASTAR-tests/mapa16.csv 2
+python3 ASTARTraslados.py ./ASTAR-tests/enunciado-reducido.csv 2
+python3 ASTARTraslados.py ./ASTAR-tests/enunciado-reducido.csv 1
